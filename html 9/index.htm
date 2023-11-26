@@ -89,11 +89,11 @@
 
     <div id="shop">
       <h2>商店</h2>
-      <div class="item" onclick="buyAutoClicker()">自動點擊器 (價格: 10 分)</div>
-      <div class="item" onclick="buyDoublePoints()">雙倍分數 (價格: 20 分)</div>
-      <div class="item" onclick="buyTripleClick()">三倍點擊 (價格: 30 分)</div>
-      <div class="item" onclick="buySuperClick()">超級點擊 (價格: 40 分)</div>
-      <div class="item" onclick="buyMegaClick()">超高效點擊 (價格: 50 分)</div>
+      <div class="item" onclick="buyAutoClicker()">自動點擊器 (價格: <span id="autoClickerCost">10</span> 分，等級: <span id="autoClickerLevel">1</span>)</div>
+      <div class="item" onclick="buyDoublePoints()">雙倍分數 (價格: <span id="doublePointsCost">20</span> 分，等級: <span id="doublePointsLevel">1</span>)</div>
+      <div class="item" onclick="buyTripleClick()">三倍點擊 (價格: <span id="tripleClickCost">30</span> 分，等級: <span id="tripleClickLevel">1</span>)</div>
+      <div class="item" onclick="buySuperClick()">超級點擊 (價格: <span id="superClickCost">40</span> 分，等級: <span id="superClickLevel">1</span>)</div>
+      <div class="item" onclick="buyMegaClick()">超高效點擊 (價格: <span id="megaClickCost">50</span> 分，等級: <span id="megaClickLevel">1</span>)</div>
     </div>
   </div>
 
@@ -103,8 +103,6 @@
       <p>歡迎來到點擊遊戲！在這個遊戲中，你需要不斷點擊「點擊我」按鈕來獲得分數。當你達到一定分數時，你會升級到下一個等級，同時獲得額外的分數。</p>
       <p>你可以使用分數在商店中購買不同的道具，這些道具包括自動點擊器和各種點擊效果的提升。</p>
       <p>享受遊戲並看看你能達到多少分數吧！</p>
-      <p>本遊戲由許元洧製作、維護、更新</p>
-      <p>當前版本:beta1</p>
       <button onclick="closeInfo()">關閉</button>
     </div>
   </div>
@@ -113,8 +111,18 @@
     let score = 0;
     let level = 1;
     let autoClickerCost = 10;
+    let autoClickerLevel = 1;
     let autoClickerCount = 0;
     let autoClickerInterval;
+
+    let doublePointsCost = 20;
+    let doublePointsLevel = 1;
+    let tripleClickCost = 30;
+    let tripleClickLevel = 1;
+    let superClickCost = 40;
+    let superClickLevel = 1;
+    let megaClickCost = 50;
+    let megaClickLevel = 1;
 
     function incrementScore() {
       score++;
@@ -139,54 +147,90 @@
       if (score >= autoClickerCost) {
         score -= autoClickerCost;
         autoClickerCount++;
-        autoClickerCost += 5;
-
+        autoClickerCost = calculateNewCost(autoClickerCost);
+        autoClickerLevel++;
         document.getElementById('currentScore').textContent = score;
         document.getElementById('message').textContent = `購買自動點擊器！`;
-        
+
         // 啟動自動點擊器
         autoClickerInterval = setInterval(() => {
           incrementScore();
         }, 1000);
+
+        updateShopItem('autoClickerCost', autoClickerCost);
+        updateShopItem('autoClickerLevel', autoClickerLevel);
       } else {
         document.getElementById('message').textContent = `分數不足以購買自動點擊器。`;
       }
     }
 
     function buyDoublePoints() {
-      if (score >= 20) {
-        score -= 20;
+      if (score >= doublePointsCost) {
+        score -= doublePointsCost;
+        doublePointsCost = calculateNewCost(doublePointsCost);
+        doublePointsLevel++;
+        document.getElementById('currentScore').textContent = score;
         document.getElementById('message').textContent = `購買雙倍分數效果！`;
+
+        updateShopItem('doublePointsCost', doublePointsCost);
+        updateShopItem('doublePointsLevel', doublePointsLevel);
       } else {
         document.getElementById('message').textContent = `分數不足以購買雙倍分數效果。`;
       }
     }
 
     function buyTripleClick() {
-      if (score >= 30) {
-        score -= 30;
+      if (score >= tripleClickCost) {
+        score -= tripleClickCost;
+        tripleClickCost = calculateNewCost(tripleClickCost);
+        tripleClickLevel++;
+        document.getElementById('currentScore').textContent = score;
         document.getElementById('message').textContent = `購買三倍點擊效果！`;
+
+        updateShopItem('tripleClickCost', tripleClickCost);
+        updateShopItem('tripleClickLevel', tripleClickLevel);
       } else {
         document.getElementById('message').textContent = `分數不足以購買三倍點擊效果。`;
       }
     }
 
     function buySuperClick() {
-      if (score >= 40) {
-        score -= 40;
+      if (score >= superClickCost) {
+        score -= superClickCost;
+        superClickCost = calculateNewCost(superClickCost);
+        superClickLevel++;
+        document.getElementById('currentScore').textContent = score;
         document.getElementById('message').textContent = `購買超級點擊效果！`;
+
+        updateShopItem('superClickCost', superClickCost);
+        updateShopItem('superClickLevel', superClickLevel);
       } else {
         document.getElementById('message').textContent = `分數不足以購買超級點擊效果。`;
       }
     }
 
     function buyMegaClick() {
-      if (score >= 50) {
-        score -= 50;
+      if (score >= megaClickCost) {
+        score -= megaClickCost;
+        megaClickCost = calculateNewCost(megaClickCost);
+        megaClickLevel++;
+        document.getElementById('currentScore').textContent = score;
         document.getElementById('message').textContent = `購買超高效點擊效果！`;
+
+        updateShopItem('megaClickCost', megaClickCost);
+        updateShopItem('megaClickLevel', megaClickLevel);
       } else {
         document.getElementById('message').textContent = `分數不足以購買超高效點擊效果。`;
       }
+    }
+
+    function calculateNewCost(currentCost) {
+      // 每購買一次，價格提高一倍
+      return currentCost * 2;
+    }
+
+    function updateShopItem(itemId, value) {
+      document.getElementById(itemId).textContent = value;
     }
 
     function showInfo() {
